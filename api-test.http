@@ -1,0 +1,49 @@
+# Set Authorization Token
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2MxZjgzOGJiYWFlMDU0MmVlOTBjNjEiLCJpYXQiOjE3NDA3NjgxNjh9.oR_twhRAY5w9dc5mj4osL4FCf9GOUfFH_Ie139gK9bg
+
+# Set API Base URL
+@baseUrl = https://your-api-endpoint.com/category
+
+### 🟢 Get All Categories
+GET {{baseUrl}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 🟢 Get Category by ID
+GET {{baseUrl}}/CATEGORY_ID  # Replace CATEGORY_ID with a real one
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+### 🟢 Create a New Category
+POST   http://localhost:4400/api/category
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2MxZjgzOGJiYWFlMDU0MmVlOTBjNjEiLCJpYXQiOjE3NDA3NjgxNjh9.oR_twhRAY5w9dc5mj4osL4FCf9GOUfFH_Ie139gK9bg
+Content-Type: application/json
+
+{
+  "name": "Iphone"
+}
+
+
+### 🟢 Login
+POST http://localhost:4400/api/auth
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "charlottedavis5671@gmail.com",
+  "password": "Askme@11"
+}
+
+### 🟢 Update a Category
+PUT {{baseUrl}}/CATEGORY_ID  # Replace CATEGORY_ID with a real one
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Updated Category Name"
+}
+
+### 🔴 Delete a Category
+DELETE http://localhost:4400/api/category/67c20ee461699484dad4edb1 # Replace CATEGORY_ID with a real one
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2N2MxZjgzOGJiYWFlMDU0MmVlOTBjNjEiLCJpYXQiOjE3NDA3NzE1MTV9.bcxcjINqKvY1VoJ7iuM5280E3ATC160prenofRBpqLE
+Content-Type: application/json

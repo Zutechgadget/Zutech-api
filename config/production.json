@@ -1,0 +1,6 @@
+{
+    "jwtPrivateKey": "productapi_jwtPrivateKey",
+    "db": "mongodb+srv://charlottedavis5671:K00X1qvFX0VaCjMH@cluster0.nvgse.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
+    "port": 4400
+  }
+  

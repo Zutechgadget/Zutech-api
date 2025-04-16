@@ -14,7 +14,7 @@ connectDB();
 app.use(cors());
 // Allow requests from specific origins (your frontend)
 app.use(cors({
-  origin: ["http://localhost:3000", "https://apple-nx.vercel.app"],
+  origin: ["http://localhost:3000", "hhttps://zutech.vercel.app/"],
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"]
 }));

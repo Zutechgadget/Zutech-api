@@ -30,8 +30,8 @@ Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
-  "email": "charlottedavis5671@gmail.com",
-  "password": "Askme@11"
+  "email": "zutechgadgets55@gmail.com",
+  "password": "Askme@55"
 }
 
 ### 🟢 Update a Category

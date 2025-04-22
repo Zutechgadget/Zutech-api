@@ -5,6 +5,7 @@ import { User } from '../model/user.js';
 
 const router = express.Router();
 
+// Login route
 router.post('/', async (req, res) => {
   const { email, password } = req.body;
 
@@ -30,7 +31,7 @@ router.post('/', async (req, res) => {
     const token = jwt.sign(
       { _id: user._id, isAdmin: user.isAdmin, email: user.email, name: user.name },
       jwtPrivateKey,
-      { expiresIn: '24h' } // Changed from 1h to 24h
+      { expiresIn: '24h' }
     );
 
     console.log('Generated token for:', email, { isAdmin: user.isAdmin });
@@ -49,6 +50,19 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Token verification route
+router.get('/verify', (req, res) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'No token provided' });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    res.status(200).json({ user: decoded });
+  } catch (err) {
+    res.status(401).json({ error: 'Invalid token' });
   }
 });
 

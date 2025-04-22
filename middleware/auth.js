@@ -1,31 +1,46 @@
-import jwt from "jsonwebtoken";
-import config from "config";
+import jwt from 'jsonwebtoken';
+import { User } from '../model/user.js';
 
-function auth(req, res, next) {
-    const authHeader = req.header("Authorization");
-    if (!authHeader) {
-        return res.status(401).send("Access denied. No token provided.");
-    }
-
-    const token = authHeader.split(" ")[1]; // Extract token after "Bearer"
+// Authenticate any user
+export const authenticate = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
     if (!token) {
-        return res.status(401).send("Access denied. Token missing.");
+      return res.status(401).json({ error: 'No token provided' });
     }
 
-    try {
-        const secretKey = config.get("jwtPrivateKey") || "your_secret_key";
-        const decoded = jwt.verify(token, secretKey);
-        req.user = decoded;
-        next();
-    } catch (err) {
-        res.status(400).send("Invalid token.");
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    const user = await User.findById(decoded._id).select('-password');
+    if (!user) {
+      return res.status(401).json({ error: 'User not found' });
     }
-}
 
-// Debugging: Log received tokens
-// app.use((req, res, next) => {
-//     console.log("Token received:", req.headers.authorization);
-//     next();
-// });
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error('Authentication error:', err.message);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};
 
-export default auth;
+// Authenticate admin only
+export const authenticateAdmin = async (req, res, next) => {
+  try {
+    const token = req.header('Authorization')?.replace('Bearer ', '');
+    if (!token) {
+      return res.status(401).json({ error: 'No token provided' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_jwt_secret');
+    const user = await User.findById(decoded._id).select('-password');
+    if (!user || !user.isAdmin) {
+      return res.status(403).json({ error: 'Admin access required' });
+    }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    console.error('Admin authentication error:', err.message);
+    res.status(401).json({ error: 'Invalid token' });
+  }
+};

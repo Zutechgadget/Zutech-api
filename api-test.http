@@ -34,6 +34,19 @@ Content-Type: application/json
   "password": "Askme@55"
 }
 
+
+### 🟢 signp
+POST http://localhost:4400/api/users
+Content-Type: application/json
+
+{
+  "name": "Zutech Gadgets",
+  "email": "charlottedavis5671@gmail.com",
+  "password": "Askme@56",
+  "isAdmin": true
+}
+
+
 ### 🟢 Update a Category
 PUT {{baseUrl}}/CATEGORY_ID  # Replace CATEGORY_ID with a real one
 Authorization: Bearer {{token}}

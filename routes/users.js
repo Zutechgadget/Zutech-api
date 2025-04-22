@@ -16,7 +16,14 @@ router.post('/', async (req, res) => {
     let user = await User.findOne({ email: req.body.email });
     if (user) return res.status(400).send('User already registered.');
 
-    user = new User(_.pick(req.body, ['name', 'email', 'password']));
+    // Allow isAdmin to be passed, defaults to false if not provided
+    user = new User({
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password,
+        isAdmin: req.body.isAdmin || false // Default to false if not provided
+    });
+
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(user.password, salt);
 
@@ -26,8 +33,8 @@ router.post('/', async (req, res) => {
         return res.status(500).send('Error creating user: ' + err.message);
     }
 
-    const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
-    res.send({ ..._.pick(user, ['_id', 'name', 'email']), token });
+    const token = jwt.sign({ _id: user._id, isAdmin: user.isAdmin }, config.get('jwtPrivateKey'));
+    res.send({ ..._.pick(user, ['_id', 'name', 'email', 'isAdmin']), token });
 });
 
 // Direct password reset (no token)

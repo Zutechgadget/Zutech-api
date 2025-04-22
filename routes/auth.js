@@ -1,44 +1,55 @@
 import express from 'express';
-import Joi from 'joi';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import config from 'config';
 import { User } from '../model/user.js';
 
 const router = express.Router();
 
 router.post('/', async (req, res) => {
-    const { error } = validate(req.body);
-    if (error) {
-        return res.status(400).send(error.details[0].message);
-    }
+  const { email, password } = req.body;
 
-    // Check if the user exists
-    const user = await User.findOne({ email: req.body.email });
+  try {
+    const user = await User.findOne({ email });
     if (!user) {
-        return res.status(400).send('Invalid email or password.');
+      console.log('User not found:', email);
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Check if password is valid
-    const validPassword = await bcrypt.compare(req.body.password, user.password);
+    const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) {
-        return res.status(400).send('Invalid email or password.');
+      console.log('Invalid password for:', email);
+      return res.status(400).json({ message: 'Invalid email or password' });
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+    const jwtPrivateKey = process.env.JWT_SECRET;
+    if (!jwtPrivateKey) {
+      console.error('JWT_SECRET not defined');
+      return res.status(500).json({ error: 'Server configuration error' });
+    }
 
-    // Send token
-    res.send({ token });
-});
+    const token = jwt.sign(
+      { _id: user._id, isAdmin: user.isAdmin, email: user.email, name: user.name },
+      jwtPrivateKey,
+      { expiresIn: '24h' } // Changed from 1h to 24h
+    );
 
-function validate(req) {
-    const schema = Joi.object({
-        email: Joi.string().min(5).max(255).required().email(),
-        password: Joi.string().min(5).max(255).required()
+    console.log('Generated token for:', email, { isAdmin: user.isAdmin });
+
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        phone: user.phone,
+        address: user.address,
+      },
     });
-
-    return schema.validate(req);
-}
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 export default router;
